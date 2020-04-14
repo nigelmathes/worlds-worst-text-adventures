@@ -1,0 +1,10 @@
+.idea
+.idea/*
+dist/*
+.pytest_cache/*
+.tox/*
+.coverage
+.DS_Store
+*__pycache__*
+.serverless
+models
