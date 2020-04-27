@@ -7,4 +7,4 @@ dist/*
 .DS_Store
 *__pycache__*
 .serverless
-models
+jericho-game-suite

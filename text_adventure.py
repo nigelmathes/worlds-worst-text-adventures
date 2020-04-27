@@ -4,8 +4,7 @@ except ImportError:
     pass
 
 import json
-import textworld
-import wget
+from jericho import *
 
 
 def do_action(event, context):
@@ -24,20 +23,27 @@ def do_action(event, context):
 
     action = request_body["action"].lower()
     # game = request_body["game"].lower()
-    game = 'zork1'
-    initialized = False
 
-    # Download the game
-    if not initialized:
-        wget.download("https://archive.org/download/Zork1Release88Z-machineFile/zork1.z5",
-                      game + ".z5")
-        env = textworld.start('./zork1.z5')
-        game_state = env.reset()
-        initialized = True
+    # Create the environment
+    env = FrotzEnv("jericho-game-suite/zork1.z5")
+    initial_observation, info = env.reset()
+    done = False
 
-    if action == 'Done':
-        env.close()
+    # Take an action in the environment using the step fuction.
+    # The resulting text-observation, reward, and game-over indicator is returned.
+    observation, reward, done, info = env.step(action)
+    # Total score and move-count are returned in the info dictionary
+    print('Total Score', info['score'], 'Moves', info['moves'])
+    print(observation)
 
-    game_state, reward, done = env.step(action)
+    return None
 
-    return env.render()
+
+if __name__ == "__main__":
+    do_action({
+        "statusCode": 200,
+        "body": {
+            "action": "take leaflet",
+            "game": "zork1"
+        }
+    }, {})
