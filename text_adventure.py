@@ -4,14 +4,22 @@ except ImportError:
     pass
 
 import json
+from pathlib import Path
+
 from jericho import *
 
 
 def do_action(event, context):
     """
-    Function to take input text command and play a text adventure
+    Function to take an array of input text commands, along with
+    a game name found in games.json, and play that text adventure game.
 
     :param event: Input AWS Lambda event dict
+                  Must contain in event["body"]:
+                  {
+                      "actions": [],
+                      "game": "zork1",
+                  }
     :param context: Input AWS Lambda context dict
 
     :return: Output AWS Lambda dict
@@ -21,29 +29,38 @@ def do_action(event, context):
     if type(request_body) == str:
         request_body = json.loads(request_body)
 
-    action = request_body["action"].lower()
-    # game = request_body["game"].lower()
+    actions = request_body["actions"]
+    game = request_body["game"].lower()
 
     # Create the environment
-    env = FrotzEnv("jericho-game-suite/zork1.z5")
+    game_suite_path = Path(__file__).resolve().parent / "jericho-game-suite"
+
+    game_path = list(game_suite_path.glob(f"{game}*"))[0]
+
+    env = FrotzEnv(game_path.as_posix())
     initial_observation, info = env.reset()
     done = False
 
-    # Take an action in the environment using the step fuction.
-    # The resulting text-observation, reward, and game-over indicator is returned.
-    observation, reward, done, info = env.step(action)
-    # Total score and move-count are returned in the info dictionary
-    print('Total Score', info['score'], 'Moves', info['moves'])
-    print(observation)
+    # This requires spaCy:
+    # print(f"{env.get_valid_actions()}")
+    observation = ""
+    for action in actions:
+        action = action.lower()
+        # Take an action in the environment using the step fuction.
+        # The resulting text-observation, reward, and game-over indicator is returned.
+        observation, reward, done, info = env.step(action)
+        # Total score and move-count are returned in the info dictionary
 
-    return None
+    print('Total Score', info['score'], 'Moves', info['moves'])
+
+    return observation.rstrip()
 
 
 if __name__ == "__main__":
     do_action({
         "statusCode": 200,
         "body": {
-            "action": "take leaflet",
+            "actions": ["read paper", "explore", "jump", "take leaflet"],
             "game": "zork1"
         }
     }, {})
