@@ -41,26 +41,21 @@ def do_action(event, context):
     initial_observation, info = env.reset()
     done = False
 
-    # This requires spaCy:
-    # print(f"{env.get_valid_actions()}")
     observation = ""
+    action = ""
     for action in actions:
         action = action.lower()
-        # Take an action in the environment using the step fuction.
+        # Take an action in the environment using the step function.
         # The resulting text-observation, reward, and game-over indicator is returned.
         observation, reward, done, info = env.step(action)
         # Total score and move-count are returned in the info dictionary
 
-    print('Total Score', info['score'], 'Moves', info['moves'])
+    print('Last Action', action, 'Total Score', info['score'], 'Moves', info['moves'],
+          done)
 
-    return observation.rstrip()
+    message = observation.rstrip()
 
-
-if __name__ == "__main__":
-    do_action({
-        "statusCode": 200,
-        "body": {
-            "actions": ["read paper", "explore", "jump", "take leaflet"],
-            "game": "zork1"
-        }
-    }, {})
+    if done:
+        return f"GAME OVER YOU WIN.\n {message}"
+    else:
+        return message

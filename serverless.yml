@@ -20,8 +20,7 @@ plugins:
 custom:
   pythonRequirements:
     dockerizePip: true
-    zip: true
-    slim: true
+    useStaticCache: false
 
 package:
   exclude:
