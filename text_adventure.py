@@ -55,7 +55,11 @@ def do_action(event, context):
 
     message = observation.rstrip()
 
-    if done:
-        return f"GAME OVER YOU WIN.\n {message}"
-    else:
-        return message
+    message = json.dumps(message)
+
+    result = {
+        "statusCode": 200,
+        "body": message,
+        "headers": {"Access-Control-Allow-Origin": "*"},
+    }
+    return result

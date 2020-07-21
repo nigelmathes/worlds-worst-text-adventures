@@ -23,6 +23,7 @@ custom:
     useStaticCache: false
 
 package:
+  individually: false
   exclude:
     - node_modules/**
     - venv/**

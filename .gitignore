@@ -7,3 +7,6 @@ dist/*
 .DS_Store
 *__pycache__*
 .serverless
+test_input.json
+.requirements.zip
+node_modules
